@@ -1,0 +1,4 @@
+beautifulsoup4==4.12.2
+lxml==4.9.3
+numpy==1.25.2
+opencv-python==4.8.0.74
