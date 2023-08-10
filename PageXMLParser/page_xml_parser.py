@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-from structure import PageXML, Page, Line
+from PageXMLParser.structure import PageXML, Page, Line
 import pathlib
 import numpy
 

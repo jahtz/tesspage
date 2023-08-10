@@ -1,5 +1,5 @@
-from structure import PageXML
-import page_xml_parser
+from PageXMLParser.structure import PageXML
+import PageXMLParser.page_xml_parser
 import numpy
 import cv2
 import os
@@ -18,7 +18,7 @@ def generate_line_images(xml_data: PageXML, input_dir: str, output_dir: str) -> 
         Work summary
     """
     if not pathlib.Path(input_dir).exists() or not pathlib.Path(input_dir).is_dir():
-        return "Input directory does not exist"
+        return 'Input directory does not exist'
     if not pathlib.Path(output_dir).exists():
         os.mkdir(output_dir)
 
@@ -44,15 +44,15 @@ def generate_line_images(xml_data: PageXML, input_dir: str, output_dir: str) -> 
 
             filename = name_generator(xml_data.id, str(page_counter), str(line_counter))
             # show_image(filename, cropped)
-            cv2.imwrite(filename + ".png", cropped)
-            with open(filename + ".gt.txt", "w") as f:
+            cv2.imwrite(filename + '.png', cropped)
+            with open(filename + '.gt.txt', 'w', encoding='utf-8') as f:
                 f.write(line.text)
             line_counter += 1
 
         os.chdir(working_dir)  # change working directory to original dir to fetch image
         page_counter += 1
 
-    return f'{xml_data.id}: Cropped {line_counter} line(s) from {page_counter} page(s)'
+    return f'{xml_data.id}.xml: Cropped {line_counter} line(s) from {page_counter} page(s)'
 
 
 def show_image(name: str, img) -> None:
@@ -83,8 +83,8 @@ def name_generator(xml_id: str, page_id: str, line_id: str) -> str:
     return f'{xml_id}-p{page_id}-l{line_id}'
 
 
-if __name__ == '__main__':
-    bs = page_xml_parser.check_valid_page_xml('../Examples/0001.xml')
-    data = page_xml_parser.extract_data(bs, "0001")
-
-    generate_line_images(data, "../Examples/", "../Output/")
+#if __name__ == '__main__':
+#    bs = page_xml_parser.check_valid_page_xml('../Examples/0001.xml')
+#    data = page_xml_parser.extract_data(bs, '0001')
+#
+#    generate_line_images(data, '../Examples/', '../Output/')
