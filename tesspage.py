@@ -1,58 +1,73 @@
-from argparse import ArgumentParser
+from argparse import ArgumentParser, Namespace
 import pathlib
 import os
-from PageXMLParser.page_xml_parser import check_valid_page_xml, extract_data
-from PageXMLParser.image_cropper import generate_line_images
+
+from pagexml.parser import parse_page_xml
+from ground_truth.converter import xml_to_line_gt
 
 
-def init_cli():
+def cli():
     parser = ArgumentParser(
-        description='Convert full page image files and convert to single line images and ground truth text files for tesseract training',
-        epilog='GitHub: https://github.com/Jatzelberger/TessPage'
+        description='Toolset for Tesseract training with PageXML Ground-Truth',
+        epilog='GitHub: https://github.com/Jatzelberger/tesspage'
     )
-    parser.add_argument('-c', '--convert', action='store_true',
-                        help="Convert files")
-    parser.add_argument('-f', '--full', action='store_true',
-                        help="Convert files and train tesseract (not implemented)")
+
+    parser.add_argument('-s', '--setup', action='store_true',
+                        help="Creates necessary file structure and downloads repositories")
+    parser.add_argument('-g', '--generate', action='store_true',
+                        help="Generates ground truth data from PageXML, requires INPUT_DIR, OUTPUT_DIR")
     parser.add_argument('-t', '--train', action='store_true',
-                        help="Train tesseract with data from output_dir (not implemented)")
-    parser.add_argument('-p', '--purge', action='store_true',
-                        help="Purge output dir (not implemented)")
-    parser.add_argument('input_dir',
-                        help='Directory with full page image and matching PageXML files')
-    parser.add_argument('output_dir',
-                        help='Directory for output of converted data')
+                        help='starts training process, requires INPUT_DIR"')
+
+    parser.add_argument('INPUT_DIR', nargs='?', default=None,
+                        help='Folder containing PageXML files and matching images')
+    parser.add_argument('OUTPUT_DIR', nargs='?', default=None,
+                        help='Folder containing processed Ground-Truth')
 
     args = parser.parse_args()
-    if args.convert and (args.input_dir is not None):
-        handle_convert(args)
-    else:
-        parser.print_help()
+
+    if args.setup:
+        setup()
+    if args.generate:
+        if args.INPUT_DIR is not None and args.OUTPUT_DIR is not None:
+            generate(args)
+        else:
+            parser.print_help()
+    if args.train:
+        if args.INPUT_DIR is not None:
+            train()
+        else:
+            parser.print_help()
 
 
-def handle_convert(args):
-    if not pathlib.Path(args.input_dir).exists():
-        # check, if input folder exists
-        raise Exception('Input directory does not exist!')
+def setup():
+    if input('tesseract-ocr, libtesseract-ocr, libtool, pkg-config, make, wget, find, bash, unzip, bc and git installed? [Y/n]').lower() in ['y', 'yes']:
+        if not pathlib.Path('./tesstrain').exists():
+            os.system('git clone https://github.com/tesseract-ocr/tesstrain')  # fetch tesstrain repository
+        if not pathlib.Path('./tessdata_best').exists():
+            os.system('git clone https://github.com/tesseract-ocr/tessdata_best')  # fetch tessdata_best repository
 
-    # create list of .xml files in input folder
-    xml_files = [xml.absolute().as_posix() for xml in pathlib.Path(args.input_dir).glob('**/*.xml')]
+        os.mkdir('./input')  # create default folders
+        os.mkdir('./output')
 
-    if len(xml_files) < 1:
-        # check if .xml files exist
-        raise Exception('Input directory does not contain any .xml files')
+        os.chdir('./tesstrain')
+        os.system('make tesseract-langdata')  # fetch tesseract config and create data dir
 
-    if not pathlib.Path(args.output_dir).exists():
-        # create output directory if non-existent
-        os.mkdir(args.output_dir)
 
-    # convert files
-    for xml in xml_files:
-        xml_id = pathlib.Path(xml).name.replace('.xml', '')
-        bs = check_valid_page_xml(xml)
-        print(generate_line_images(extract_data(bs, xml_id), args.input_dir, args.output_dir))
+def generate(args: Namespace):
+    if not pathlib.Path(args.INPUT_DIR).exists():
+        raise Exception('Input directory does not exist!')  # check, if input folder exists
+
+    xml_files = pathlib.Path(args.INPUT_DIR).glob('*.xml')  # get list of all xml files in input_dir
+    for file in xml_files:
+        xml = parse_page_xml(file.as_posix())  # parse files
+        print(xml_to_line_gt(xml, args.OUTPUT_DIR))  # generate ground truth files
     print('Done!')
 
 
+def train():
+    pass
+
+
 if __name__ == '__main__':
-    init_cli()
+    cli()

@@ -1,22 +1,58 @@
-# TessPAGE
-Train Tesseract OCR with PAGE GT
+# TessPage
+Toolset for Tesseract training with PageXML Ground-Truth
 
 ## Usage
-### Convert from PageXML to Tesseract Ground Truth
-`python3 tesspage.py -c <input_dir> <output_dir>`
+### Install & Setup:
+1. Clone tesspage:
+    ```
+    $ git clone https://github.com/Jatzelberger/tesspage
+    ```
 
-### Train Tesseract (not implemented)
-`python3 tesspage.py -c <output_dir>`
-(output_dir: output_dir of convert)
+2. Install dependencies:
+    ```
+    $ sudo apt install tesseract-ocr libtesseract-ocr libtool pkg-config make wget find bash unzip bc
+    $ cd tesspage
+    $ pip install -r requirements.txt
+   ```
+3. Setup:
+   - auto (experimental):
+     ```
+     $ python3 tesspage.py -s
+     ```
+   - manual:
+     ```
+     $ git clone https://github.com/tesseract-ocr/tesstrain
+     $ git clone https://github.com/tesseract-ocr/tessdata_best
+     ```
+     - optional: `$ mkdir ./input`, `$ mkdir ./output`
+     ```
+     $ cd ./tesstrain
+     $ make tesseract-langdata
+     ```
 
-### Convert and train (not implemented)
-`python3 tesspage.py -f <input_dir> <output_dir>`
+### Generate Ground-Truth
+```
+in tesspage folder:
+$ python3 tesspage.py -g <input_folder> <output_folder>
+```
 
-### Purge output_dir (not implemented)
-`python3 tesspage.py -p <output_dir>`
+### Train Model
+```
+$ cd tesstrain
+$ make training MODEL_NAME=<model_name> START_MODEL=<start_model> DATA_DIR=<data_dir> GROUND_TRUTH_DIR=<gt_dir> TESSDATA=<tessdata_best_dict> MAX_ITERATIONS=<iterations>
+```
+- `model_name`: select your model name
+- `start_model`: select start model. Custom or Lang-Code (e.g. "eng") from [langdata](https://github.com/tesseract-ocr/langdata)
+- `data_dir`: default: _/path/to/tesspage/tesstrain/data_
+- `gt_dir`: default: _/path/to/tesspage/output_
+- `tessdata_best_dict`: default: _/path/to/tesspage/tessdata_best_
+- `iterations`: default: 10000
 
-## TODO
-- [x] convert files automatically
-- [ ] add tesseract training (manual guide:  [StackOverflow](https://stackoverflow.com/questions/43352918/how-do-i-train-tesseract-4-with-image-data-instead-of-a-font-file))
-- [ ] locate training output
-- [ ] purge output folder
+Full argument list: `$ make help` or [here](https://github.com/tesseract-ocr/tesstrain#train)
+
+## TODO:
+- [ ] more robust PageXML converter
+- [ ] start training from script
+- [ ] use Tesseract from script
+- [ ] convert Tesseract prediction data back to PageXML
+- [ ] add option to purge output directory (all files or Tesstrain temp files)
