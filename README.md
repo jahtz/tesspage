@@ -23,12 +23,11 @@ Toolset for Tesseract training with PageXML Ground-Truth
      ```
      $ git clone https://github.com/tesseract-ocr/tesstrain
      $ git clone https://github.com/tesseract-ocr/tessdata_best
-     ```
-     - optional: `$ mkdir ./input`, `$ mkdir ./output`
-     ```
      $ cd ./tesstrain
      $ make tesseract-langdata
+     $ cd ..
      ```
+     - optional: `$ mkdir ./input`, `$ mkdir ./output`
 
 ### Generate Ground-Truth
 ```
