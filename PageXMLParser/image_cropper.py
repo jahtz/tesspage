@@ -17,19 +17,19 @@ def generate_line_images(xml_data: PageXML, input_dir: str, output_dir: str) -> 
     Returns:
         Work summary
     """
-    if not pathlib.Path(input_dir).exists() or not pathlib.Path(input_dir).is_dir():
+    input_dir = pathlib.Path(input_dir).absolute()
+    output_dir = pathlib.Path(output_dir).absolute()
+
+    if not pathlib.Path(input_dir.as_posix()).exists() or not pathlib.Path(input_dir.as_posix()).is_dir():
         return 'Input directory does not exist'
-    if not pathlib.Path(output_dir).exists():
-        os.mkdir(output_dir)
+    if not pathlib.Path(output_dir.as_posix()).exists():
+        os.mkdir(output_dir.as_posix())
 
     page_counter: int = 0
     line_counter: int = 0
-    working_dir = os.curdir
     for page in xml_data.pages:
-        img = cv2.imread(input_dir + page.file)
+        img = cv2.imread(pathlib.Path(input_dir).absolute().joinpath(page.file).as_posix())
         mask = numpy.zeros((page.height, page.width), dtype=numpy.uint8)
-        os.chdir(output_dir)  # change working directory to output_dir (cv2 image write)
-
         for line in page.lines:
             cv2.fillPoly(mask, numpy.int32([line.coords]), (255, 255, 255))
             res = cv2.bitwise_and(img, img, mask=mask)
@@ -44,12 +44,10 @@ def generate_line_images(xml_data: PageXML, input_dir: str, output_dir: str) -> 
 
             filename = name_generator(xml_data.id, str(page_counter), str(line_counter))
             # show_image(filename, cropped)
-            cv2.imwrite(filename + '.png', cropped)
+            cv2.imwrite(output_dir.joinpath(filename + '.png').as_posix(), cropped)
             with open(filename + '.gt.txt', 'w', encoding='utf-8') as f:
                 f.write(line.text)
             line_counter += 1
-
-        os.chdir(working_dir)  # change working directory to original dir to fetch image
         page_counter += 1
 
     return f'{xml_data.id}.xml: Cropped {line_counter} line(s) from {page_counter} page(s)'
@@ -81,10 +79,3 @@ def name_generator(xml_id: str, page_id: str, line_id: str) -> str:
         valid string
     """
     return f'{xml_id}-p{page_id}-l{line_id}'
-
-
-#if __name__ == '__main__':
-#    bs = page_xml_parser.check_valid_page_xml('../Examples/0001.xml')
-#    data = page_xml_parser.extract_data(bs, '0001')
-#
-#    generate_line_images(data, '../Examples/', '../Output/')
