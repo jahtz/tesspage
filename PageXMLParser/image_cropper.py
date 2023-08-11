@@ -45,7 +45,7 @@ def generate_line_images(xml_data: PageXML, input_dir: str, output_dir: str) -> 
             filename = name_generator(xml_data.id, str(page_counter), str(line_counter))
             # show_image(filename, cropped)
             cv2.imwrite(output_dir.joinpath(filename + '.png').as_posix(), cropped)
-            with open(filename + '.gt.txt', 'w', encoding='utf-8') as f:
+            with open(output_dir.joinpath(filename + '.gt.txt').as_posix(), 'w', encoding='utf-8') as f:
                 f.write(line.text)
             line_counter += 1
         page_counter += 1
