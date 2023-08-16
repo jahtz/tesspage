@@ -45,4 +45,4 @@ def xml_to_line_gt(xml: PageXMLReader, output_dir: str) -> str:
                 line_counter += 1
             region_counter += 1
         page_counter += 1
-    return f'{xml.id}.xml: Cropped {line_counter} line(s) from {region_counter} region(s) on {page_counter} page(s)'
+    return f'Cropped {line_counter} line(s) from {region_counter} region(s) on {page_counter} page(s)'

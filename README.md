@@ -10,7 +10,7 @@ Toolset for Tesseract training with PageXML Ground-Truth
 
 2. Install dependencies:
     ```
-    $ sudo apt install tesseract-ocr libtesseract-ocr libtool pkg-config make wget find bash unzip bc
+    $ sudo apt install tesseract-ocr libtesseract-dev libtool pkg-config make wget bash unzip bc
     $ cd tesspage
     $ pip install -r requirements.txt
    ```
@@ -50,7 +50,7 @@ $ make training MODEL_NAME=<model_name> START_MODEL=<start_model> DATA_DIR=<data
 Full argument list: `$ make help` or [here](https://github.com/tesseract-ocr/tesstrain#train)
 
 ## TODO:
-- [ ] more robust PageXML converter
+- [x] more robust PageXML converter
 - [ ] start training from script
 - [ ] use Tesseract from script
 - [ ] convert Tesseract prediction data back to PageXML

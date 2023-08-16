@@ -85,21 +85,29 @@ class PageXMLReader:
                 width=int(page.attrs.get('imageWidth'))
             )
             for region in page.find_all('TextRegion'):
-                r = TextRegion(
-                    id=region.attrs.get('id'),
-                    custom=region.attrs.get('custom'),
-                    coords=[[int(x) for x in y.split(',')] for y in
-                            region.find('Coords').attrs.get('points').split(' ')]
-                )
-                for line in region.find_all('TextLine'):
-                    l = TextLine(
-                        id=line.attrs.get('id'),
-                        text=line.find('Unicode').text,
-                        coords=[[int(x) for x in tuples.split(',')] for tuples in
-                                line.find('Coords').attrs.get('points').split(' ')],
+                try:
+                    r = TextRegion(
+                        id=region.attrs.get('id'),
+                        custom=region.attrs.get('custom'),
+                        coords=[[int(x) for x in y.split(',')] for y in
+                                region.find('Coords').attrs.get('points').split(' ')]
                     )
-                    r.text_lines.append(l)
-                p.text_regions.append(r)
+                    for line in region.find_all('TextLine'):
+                        try:
+                            l = TextLine(
+                                id=line.attrs.get('id'),
+                                text=line.find('Unicode').text,
+                                coords=[[int(x) for x in tuples.split(',')] for tuples in
+                                        line.find('Coords').attrs.get('points').split(' ')],
+                            )
+                            r.text_lines.append(l)
+                        except AttributeError:
+                            print(f'\tError in TextLine: {line.attrs.get("id")}')
+                            continue  # ignore line on missing data
+                    p.text_regions.append(r)
+                except AttributeError:
+                    print(f'\tError in TextRegion: {region.attrs.get("id")}')
+                    continue  # ignore region on missing data
             self.pages.append(p)
             page_counter += 1
 
