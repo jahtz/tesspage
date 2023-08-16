@@ -57,13 +57,13 @@ def setup():
 def generate(args: Namespace):
     if not pathlib.Path(args.INPUT_DIR).exists():
         raise Exception('Input directory does not exist!')  # check, if input folder exists
-
-    xml_files = pathlib.Path(args.INPUT_DIR).glob('*.xml')  # get list of all xml files in input_dir
+    xml_files = [file for file in pathlib.Path(args.INPUT_DIR).glob('*.xml')]  # get list of all xml files in input_dir
+    xml_files.sort()
     for file in xml_files:
+        print(f'{file.name}:')
         xml = parse_page_xml(file.as_posix())  # parse files
-        print(xml_to_line_gt(xml, args.OUTPUT_DIR))  # generate ground truth files
+        print(f'\t{xml_to_line_gt(xml, args.OUTPUT_DIR)}')  # generate ground truth files
     print('Done!')
-
 
 def train():
     pass
