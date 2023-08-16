@@ -10,7 +10,7 @@ Toolset for Tesseract training with PageXML Ground-Truth
 
 2. Install dependencies:
     ```
-    $ sudo apt install tesseract-ocr libtesseract-dev libtool pkg-config make wget bash unzip bc
+    $ sudo apt install -y tesseract-ocr libtesseract-dev libtool pkg-config make wget bash unzip bc
     $ cd tesspage
     $ pip install -r requirements.txt
    ```
