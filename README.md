@@ -15,43 +15,77 @@ Toolset for Tesseract training with PageXML Ground-Truth
     $ pip install -r requirements.txt
    ```
 3. Setup:
-   - auto (experimental):
      ```
-     $ python3 tesspage.py -s
+     $ python3 tesspage.py setup
      ```
-   - manual:
-     ```
-     $ git clone https://github.com/tesseract-ocr/tesstrain
-     $ git clone https://github.com/tesseract-ocr/tessdata_best
-     $ cd ./tesstrain
-     $ make tesseract-langdata
-     $ cd ..
-     ```
-     - optional: `$ mkdir ./input`, `$ mkdir ./output`
+   
+### Structure
+#### (after setup)
+```
+tesspage
+│ README.md                 
+│ requirements.txt          required pip packages
+│ LICENSE                   license
+└─ tesspage                 tesspage files
+│  └ ...
+└─ tesstrain                tesstrain¹ files
+│  └ ...
+└─ data
+│  │ eval                   default dir for evaluation
+│  │ ground_truth           default dir for ground_truth output
+│  │ ocr_input              default dir for tesseract image input
+│  │ ocr_output             default dir for tesseract output
+│  │ tessconfigs²           tesseract config files
+│  │ tessdata_best³         training start model 
+│  └ training_data          pagexml input
+└ tesspage.py               entry point
+
+```
+¹ [tesstrain](https://github.com/tesseract-ocr/tesstrain), ² [tessconfigs](https://github.com/tesseract-ocr/tessconfigs.git), ³ [tessdata_best](https://github.com/tesseract-ocr/tessdata_best) 
 
 ### Generate Ground-Truth
+Copy PageXML + Image Files to `./data/training_data` (or custom folder)
 ```
-in tesspage folder:
-$ python3 tesspage.py -g <input_folder> <output_folder>
+python3 tesspage.py generate [--training_data <input_folder>] [--ground_truth <output_folder>]
 ```
+- `--training_data`: input folder containing pagexml and image files [default: ./data/training_data/]
+- `--ground_truth`: output folder (line image and text files after exec) [default: ./data/ground_truth/]
 
 ### Train Model
 ```
-$ cd tesstrain
-$ make training MODEL_NAME=<model_name> START_MODEL=<start_model> DATA_DIR=<data_dir> GROUND_TRUTH_DIR=<gt_dir> TESSDATA=<tessdata_best_dict> MAX_ITERATIONS=<iterations>
+python3 tesspage.py training [--model_name <name>] [--start_model <model>] [--data_dir <folder>] [--ground_truth <folder>] [--tessdata <folder>] [--max_iterations <number>] [ARGS ...]
 ```
-- `model_name`: select your model name
-- `start_model`: select start model. Custom or Lang-Code (e.g. "eng") from [langdata](https://github.com/tesseract-ocr/langdata)
-- `data_dir`: default: _/path/to/tesspage/tesstrain/data_
-- `gt_dir`: default: _/path/to/tesspage/output_
-- `tessdata_best_dict`: default: _/path/to/tesspage/tessdata_best_
-- `iterations`: default: 10000
+- `--model_name`: name of trained model [default: foo]
+- `--start_model`: select start model. Previously trained model or lang-code (e.g. "eng") from [langdata](https://github.com/tesseract-ocr/langdata) [default: eng]
+- `--data_dir`: tesstrain data dir [default: ./tesstrain/data/]
+- `--ground_truth`: ground truth folder (line image and text files) [default: ./data/ground_truth/]
+- `--tessdata`: training start model folder [default: ./data/tessdata_best/]
+- `--max_iterations`: training iterations [default: 10000]
+- `ARGS`: Full argument list [here](https://github.com/tesseract-ocr/tesstrain#train)
 
-Full argument list: `$ make help` or [here](https://github.com/tesseract-ocr/tesstrain#train)
+### Run Tesseract
+```
+python3 tesspage.py tesseract --model_name <name> [--input <path>] [--output <path>] [--data_dir <folder>] [--config_dir <config_dir>] [--config <config>] [ARGS ...]
+```
+- `--model_name`: select model, either language or custom trained model
+- `--input`: input directory or image file
+- `--output`: output directory
+- `--data_dir`: tesstrain data dir [default: ./tesstrain/data/]
+- `--config_dir`: Output config directory. [default: ./data/tessconfigs/configs/]
+- `--config`: Config file to be used (txt, pdf, hocr, tsv, ...) [default: txt]
+- `ARGS`: guide [here](https://tesseract-ocr.github.io/tessdoc/Command-Line-Usage.html)
 
+### Evaluate Model
+> [!NOTE]
+> Coming soon.
+
+### Help
+```
+python3 tesspage.py -h
+```
 ## TODO:
 - [x] more robust PageXML converter
-- [ ] start training from script
-- [ ] use Tesseract from script
-- [ ] convert Tesseract prediction data back to PageXML
-- [ ] add option to purge output directory (all files or Tesstrain temp files)
+- [x] start training from script
+- [x] use Tesseract from script
+- [ ] run Tesseract with pagexml output
+- [ ] evaluate trained model
