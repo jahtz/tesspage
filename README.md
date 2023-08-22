@@ -29,6 +29,7 @@ tesspage
 └─ tesspage                 tesspage files
 │  └ ...
 └─ tesstrain¹               tesstrain files
+│  │ data                   trained model data 
 │  └ ...
 └─ data
 │  │ eval                   default dir for evaluation
@@ -87,5 +88,5 @@ python3 tesspage.py -h
 - [x] more robust PageXML converter
 - [x] start training from script
 - [x] use Tesseract from script
-- [ ] run Tesseract with pagexml output
+- [x] run Tesseract with pagexml output
 - [ ] evaluate trained model
