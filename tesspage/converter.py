@@ -1,12 +1,12 @@
-import pathlib
 import os
 import cv2
 import numpy
+from pathlib import Path
 
-from tesspage.pagexml_parser import PageXMLReader
+from tesspage.document import Document
 
 
-def xml_to_line_gt(xml: PageXMLReader, output_dir: str) -> str:
+def xml_to_line_gt(xml: Document, output_dir: Path) -> str:
     """
     Crops image to line ground truth data based on PageXML data
 
@@ -14,10 +14,9 @@ def xml_to_line_gt(xml: PageXMLReader, output_dir: str) -> str:
     :param output_dir: where ground truth data will be stored
     :return: status string
     """
-    out = pathlib.Path(output_dir).absolute()
 
-    if not out.exists():
-        os.mkdir(out.as_posix())
+    if not output_dir.exists():
+        os.mkdir(output_dir.as_posix())
 
     page_counter: int = 0
     region_counter: int = 0
@@ -38,8 +37,8 @@ def xml_to_line_gt(xml: PageXMLReader, output_dir: str) -> str:
                 cropped = final_img[rect[1]: rect[1] + rect[3], rect[0]: rect[0] + rect[2]]
 
                 filename = f'{xml.id}-{page.id}-{region.id}-{line.id}'
-                cv2.imwrite(out.joinpath(filename + '.png').as_posix(), cropped)
-                with open(out.joinpath(filename + '.gt.txt').as_posix(), 'w', encoding='utf-8') as f:
+                cv2.imwrite(output_dir.joinpath(filename + '.png').as_posix(), cropped)
+                with open(output_dir.joinpath(filename + '.gt.txt').as_posix(), 'w', encoding='utf-8') as f:
                     f.write(line.text)
 
                 line_counter += 1

@@ -28,7 +28,7 @@ tesspage
 │ LICENSE                   license
 └─ tesspage                 tesspage files
 │  └ ...
-└─ tesstrain                tesstrain¹ files
+└─ tesstrain¹               tesstrain files
 │  └ ...
 └─ data
 │  │ eval                   default dir for evaluation
@@ -37,8 +37,8 @@ tesspage
 │  │ ocr_output             default dir for tesseract output
 │  │ tessconfigs²           tesseract config files
 │  │ tessdata_best³         training start model 
-│  └ training_data          pagexml input
-└ tesspage.py               entry point
+│  └ training_data          default dir for pagexml input
+└─ tesspage.py              entry point
 
 ```
 ¹ [tesstrain](https://github.com/tesseract-ocr/tesstrain), ² [tessconfigs](https://github.com/tesseract-ocr/tessconfigs.git), ³ [tessdata_best](https://github.com/tesseract-ocr/tessdata_best) 
