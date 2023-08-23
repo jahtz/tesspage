@@ -1,4 +1,6 @@
 from pathlib import Path
+from .hocr_parser import hocr_to_string
+from .pagexml_parser import pagexml_to_string
 
 
 def abs_path(rel_path: str) -> Path:
@@ -29,3 +31,18 @@ def file_list(dir_path: Path, extension: str) -> list:
         return files
     else:
         return []
+
+
+def file_to_string(file: Path) -> str:
+    suffix = file.suffix
+    if suffix == '.txt':
+        with open(file, 'r') as f:
+            text = f.read()
+        return text
+    elif suffix == '.hocr':
+        return hocr_to_string(file)
+    elif suffix == '.xml':
+        return pagexml_to_string(file)
+    else:
+        msg = f'{file}: unsupported format'
+        raise TypeError(msg)
