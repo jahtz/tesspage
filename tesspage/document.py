@@ -34,3 +34,14 @@ class Document:
     pages: list = field(default_factory=list)
 
 
+def page_to_string(page: Page) -> str:
+    """
+    Converts page object to single string
+
+    Args:
+        page: Page object
+
+    Returns:
+        page text as string (lines seperated with \\n, textregions with \\n\\n)
+    """
+    return '\n\n'.join(['\n'.join([line.text for line in region.text_lines]) for region in page.text_regions])

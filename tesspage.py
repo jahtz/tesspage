@@ -2,11 +2,12 @@ import os
 from pathlib import Path
 from docopt import docopt
 
-from tesspage.pagexml_parser import parse_page_xml
+from tesspage.pagexml_parser import parse_pagexml
 from tesspage.pagexml_builder import build_xml_file
 from tesspage.hocr_parser import parse_hocr
 from tesspage.converter import xml_to_line_gt
-from tesspage.helper import abs_path, file_list
+from tesspage.helper import abs_path, file_list, file_to_string
+from tesspage.eval import evaluate_cer, evaluate_wer, levenshtein_distance
 
 
 cli_doc = """TessPage Command Line Tool
@@ -19,7 +20,7 @@ Usage:
     tesspage.py generate [--training_data <folder>] [--ground_truth <folder>]
     tesspage.py training [--model_name <name>] [--start_model <model>] [--data_dir <folder>] [--ground_truth <folder>] [--tessdata <folder>] [--max_iterations <number>] [ARGS ...]
     tesspage.py tesseract --model_name <name> [--input <path>] [--output <path>] [--data_dir <folder>] [--config_dir <config_dir>] [--config <config>] [ARGS ...]
-    tesspage.py eval ARGS
+    tesspage.py eval [--reference <file>] [--prediction <file>]
 
 Options:
     -h --help                       Show this screen.
@@ -40,6 +41,8 @@ Options:
     --output <path>                 Output Directory [default: ./data/ocr_output/]
     --config_dir <config_dir>       Output config directory. [default: ./data/tessconfigs/configs/]
     --config <config>               Output config. [default: txt]
+    --reference <file>              Supports .txt, .hocr .xml (pagexml) files [default: ./data/eval/reference.txt]
+    --prediction <file>             Supports .txt, .hocr .xml (pagexml) files [default: ./data/eval/prediction.txt]
     ARGS                            Additional arguments
 """
 
@@ -80,7 +83,10 @@ def cli() -> None:
         )
 
     elif args.get('eval'):
-        print('Coming soon')
+        evaluate(
+            reference_path=abs_path(args.get('--reference')),
+            prediction_path=abs_path(args.get('--prediction'))
+        )
 
     else:
         print('Something went wrong!')
@@ -142,7 +148,7 @@ def generate_ground_truth(page_input_dir: Path, gt_output_dir: Path) -> None:
 
     for file in file_list(page_input_dir, 'xml'):
         print(f'{file.name}:')
-        xml = parse_page_xml(file)  # parse files to document object
+        xml = parse_pagexml(file)  # parse files to document object
         print(f'\t{xml_to_line_gt(xml, gt_output_dir)}')  # generate line image and text files from document object
     print('Done!')
 
@@ -256,6 +262,32 @@ def page_tesseract(input_dir: Path, output_dir: Path, temp_folder: Path, data_di
     build_xml_file(data=hocr_file, target_file=output)  # write pagexml file to main output folder
 
     os.system(f'rm {temp_base}.hocr')  # remove temp file
+
+
+def evaluate(reference_path: Path, prediction_path: Path):
+    """
+    Evaluate model precision, prints result
+
+    Args:
+        reference_path: ground truth file
+        prediction_path: file predicted by model
+    """
+    if not reference_path.is_file() or not prediction_path.is_file():
+        print("Reference and prediction paths need to be files")
+        return
+    ref = file_to_string(reference_path)
+    pred = file_to_string(prediction_path)
+    print(f'Ground Truth: {reference_path}')
+    print('Prediction: {prediction_path}')
+
+    print('Character Error Rate (CER):')
+    print('{0:.4f}%'.format(evaluate_cer(ref, pred) * 100))
+
+    print('Word Error Rate (WER):')
+    print('{0:.4f}%'.format(evaluate_wer(ref, pred) * 100))
+
+    print('Levenshtein distance:')
+    print(levenshtein_distance(ref, pred))
 
 
 if __name__ == '__main__':

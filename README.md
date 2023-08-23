@@ -29,6 +29,7 @@ tesspage
 └─ tesspage                 tesspage files
 │  └ ...
 └─ tesstrain¹               tesstrain files
+│  │ data                   trained model data 
 │  └ ...
 └─ data
 │  │ eval                   default dir for evaluation
@@ -72,20 +73,23 @@ python3 tesspage.py tesseract --model_name <name> [--input <path>] [--output <pa
 - `--output`: output directory
 - `--data_dir`: tesstrain data dir [default: ./tesstrain/data/]
 - `--config_dir`: Output config directory. [default: ./data/tessconfigs/configs/]
-- `--config`: Config file to be used (txt, pdf, hocr, tsv, ...) [default: txt]
+- `--config`: Config file to be used (txt, pdf, hocr, tsv, **pagexml**, ...) [default: txt]
 - `ARGS`: guide [here](https://tesseract-ocr.github.io/tessdoc/Command-Line-Usage.html)
 
 ### Evaluate Model
-> [!NOTE]
-> Coming soon.
+```
+python3 tesspage.py eval [--reference <file>] [--prediction <file>]
+```
+- `--reference`: reference (ground truth) file, supports .txt, .hocr and .xml files [default: ./data/eval/reference.txt]
+- `--prediciton`: predicted file, supports .txt, .hocr and .xml files [default: ./data/eval/prediction.txt]
 
 ### Help
 ```
 python3 tesspage.py -h
 ```
 ## TODO:
-- [x] more robust PageXML converter
 - [x] start training from script
 - [x] use Tesseract from script
-- [ ] run Tesseract with pagexml output
-- [ ] evaluate trained model
+- [x] run Tesseract with pagexml output
+- [x] evaluate trained model (single file, manual)
+- [ ] automatic evaluation after model training with sample data, not training data!

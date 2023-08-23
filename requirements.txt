@@ -4,3 +4,5 @@ numpy>=1.24.4
 opencv-python==4.8.0.74
 Pillow==10.0.0
 docopt==0.6.2
+dinglehopper==0.9.4
+rapidfuzz==3.2.0

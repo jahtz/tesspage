@@ -1,7 +1,8 @@
 from pathlib import Path
 from bs4 import BeautifulSoup
+from datetime import datetime
 
-from tesspage.document import Document, Page, TextRegion, TextLine
+from tesspage.document import Document, Page, TextRegion, TextLine, page_to_string
 
 
 class HOCRParser:
@@ -35,6 +36,9 @@ class HOCRParser:
         creator = bs.find('meta', {'name': 'ocr-system'})
         if creator is not None:
             doc.creator = creator['content']
+
+        doc.created = str(datetime.utcnow().isoformat(timespec="seconds"))  # maybe change to actual creation time
+        doc.last_change = str(datetime.utcnow().isoformat(timespec="seconds"))
 
         for page in bs.find_all('div', {'class': 'ocr_page'}):
             p_data = self.__data_parser(page['title'])
@@ -104,3 +108,18 @@ def parse_hocr(path: Path) -> Document:
         Document object
     """
     return HOCRParser(path).document
+
+
+def hocr_to_string(path: Path) -> str:
+    """
+    Parsing PageXML file to single string
+
+    Args:
+        path: path to PageXML file
+
+    Returns:
+        formatted string (separators for page \\n\\n\\n, regions \\n\\n, lines \\n)
+
+    """
+    doc = parse_hocr(path)
+    return '\n\n\n'.join([page_to_string(page) for page in doc.pages])

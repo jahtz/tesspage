@@ -1,7 +1,7 @@
 from pathlib import Path
 from bs4 import BeautifulSoup
 
-from tesspage.document import Document, Page, TextRegion, TextLine
+from tesspage.document import Document, Page, TextRegion, TextLine, page_to_string
 
 
 class PageXMLParser:
@@ -95,7 +95,7 @@ class PageXMLParser:
         return doc
 
 
-def parse_page_xml(path: Path) -> Document:
+def parse_pagexml(path: Path) -> Document:
     """
     Parse PageXML file to Document object
 
@@ -108,3 +108,16 @@ def parse_page_xml(path: Path) -> Document:
     return PageXMLParser(path).document
 
 
+def pagexml_to_string(path: Path) -> str:
+    """
+    Parsing PageXML file to single string
+
+    Args:
+        path: path to PageXML file
+
+    Returns:
+        formatted string (separators for page \\n\\n\\n, regions \\n\\n, lines \\n)
+
+    """
+    doc = parse_pagexml(path)
+    return '\n\n\n'.join([page_to_string(page) for page in doc.pages])
