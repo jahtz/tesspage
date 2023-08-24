@@ -283,13 +283,13 @@ def evaluate(eval_folder: Path) -> None:
             pred_path = ref_path.parent.joinpath('.'.join(ref_path.name.split('.')[0:-2]) + ref_path.suffix)
             ref = file_to_string(ref_path)
             pred = file_to_string(pred_path)
-            cer = evaluate_cer(ref, pred)
+            cer = float(evaluate_cer(ref, pred))
             cer_list.append(cer)
-            wer = evaluate_wer(ref, pred)
+            wer = float(evaluate_wer(ref, pred))
             wer_list.append(wer)
             print('{0}/{1}: CER {2:.4f}%, WER: {3:.4}%'.format(ref_path.name, pred_path.name, cer * 100, wer * 100))
         except Exception:
-            print('No matching file found')
+            print(f'{ref_path.name}/No matching file found')
     if len(cer_list) == 0 or len(wer_list) == 0:
         print('Summary:\nNo values!')
     else:
