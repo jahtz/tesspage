@@ -78,18 +78,18 @@ python3 tesspage.py tesseract --model_name <name> [--input <path>] [--output <pa
 
 ### Evaluate Model
 ```
-python3 tesspage.py eval [--reference <file>] [--prediction <file>]
+python3 tesspage.py eval [--eval_input <folder>]
 ```
-- `--reference`: reference (ground truth) file, supports .txt, .hocr and .xml files [default: ./data/eval/reference.txt]
-- `--prediciton`: predicted file, supports .txt, .hocr and .xml files [default: ./data/eval/prediction.txt]
+- `--eval_input`: supports .txt, .hocr and .xml files [default: ./data/eval/]
+
+#### Name Pattern:
+- __Reference files:__ \<name>.gt.\<extension>
+- __Prediction files:__ \<name>.\<extension>
+- Supported extensions: .txt, .hocr, .xml
+- Example: 0001.gt.xml / 0001.xml
 
 ### Help
 ```
 python3 tesspage.py -h
 ```
-## TODO:
-- [x] start training from script
-- [x] use Tesseract from script
-- [x] run Tesseract with pagexml output
-- [x] evaluate trained model (single file, manual)
-- [ ] automatic evaluation after model training with sample data, not training data!
+
