@@ -7,7 +7,7 @@ from tesspage.pagexml_builder import build_xml_file
 from tesspage.hocr_parser import parse_hocr
 from tesspage.converter import xml_to_line_gt
 from tesspage.helper import abs_path, file_list, file_to_string
-from tesspage.eval import evaluate_cer, evaluate_wer, levenshtein_distance
+from tesspage.eval import evaluate_cer, evaluate_wer
 
 
 cli_doc = """TessPage Command Line Tool
@@ -20,7 +20,7 @@ Usage:
     tesspage.py generate [--training_data <folder>] [--ground_truth <folder>]
     tesspage.py training [--model_name <name>] [--start_model <model>] [--data_dir <folder>] [--ground_truth <folder>] [--tessdata <folder>] [--max_iterations <number>] [ARGS ...]
     tesspage.py tesseract --model_name <name> [--input <path>] [--output <path>] [--data_dir <folder>] [--config_dir <config_dir>] [--config <config>] [ARGS ...]
-    tesspage.py eval [--reference <file>] [--prediction <file>]
+    tesspage.py eval [--eval_input <folder>]
 
 Options:
     -h --help                       Show this screen.
@@ -41,9 +41,13 @@ Options:
     --output <path>                 Output Directory [default: ./data/ocr_output/]
     --config_dir <config_dir>       Output config directory. [default: ./data/tessconfigs/configs/]
     --config <config>               Output config. [default: txt]
+    --eval_input <folder>           Folder containing evaluation files [default: ./data/eval/]
     --reference <file>              Supports .txt, .hocr .xml (pagexml) files [default: ./data/eval/reference.txt]
     --prediction <file>             Supports .txt, .hocr .xml (pagexml) files [default: ./data/eval/prediction.txt]
     ARGS                            Additional arguments
+    
+Guide:
+    https://github.com/Jatzelberger/tesspage
 """
 
 
@@ -84,8 +88,7 @@ def cli() -> None:
 
     elif args.get('eval'):
         evaluate(
-            reference_path=abs_path(args.get('--reference')),
-            prediction_path=abs_path(args.get('--prediction'))
+            eval_folder=abs_path(args.get('--eval_input'))
         )
 
     else:
@@ -264,30 +267,33 @@ def page_tesseract(input_dir: Path, output_dir: Path, temp_folder: Path, data_di
     os.system(f'rm {temp_base}.hocr')  # remove temp file
 
 
-def evaluate(reference_path: Path, prediction_path: Path):
+def evaluate(eval_folder: Path) -> None:
     """
     Evaluate model precision, prints result
 
     Args:
-        reference_path: ground truth file
-        prediction_path: file predicted by model
+        eval_folder: folder containing eval files, pred with .extension, gt with .gt.extension. Supports .txt, .hocr and .xml (page)
     """
-    if not reference_path.is_file() or not prediction_path.is_file():
-        print("Reference and prediction paths need to be files")
-        return
-    ref = file_to_string(reference_path)
-    pred = file_to_string(prediction_path)
-    print(f'Ground Truth: {reference_path}')
-    print('Prediction: {prediction_path}')
+    cer_list = []
+    wer_list = []
 
-    print('Character Error Rate (CER):')
-    print('{0:.4f}%'.format(evaluate_cer(ref, pred) * 100))
-
-    print('Word Error Rate (WER):')
-    print('{0:.4f}%'.format(evaluate_wer(ref, pred) * 100))
-
-    print('Levenshtein distance:')
-    print(levenshtein_distance(ref, pred))
+    ref_files: list[Path] = file_list(eval_folder, 'gt.*')
+    for ref_path in ref_files:
+        try:
+            pred_path = ref_path.parent.joinpath('.'.join(ref_path.name.split('.')[0:-2]) + ref_path.suffix)
+            ref = file_to_string(ref_path)
+            pred = file_to_string(pred_path)
+            cer = evaluate_cer(ref, pred)
+            cer_list.append(cer)
+            wer = evaluate_wer(ref, pred)
+            wer_list.append(wer)
+            print('{0}/{1}: CER {2:.4f}%, WER: {3:.4}%'.format(ref_path.name, pred_path.name, cer * 100, wer * 100))
+        except Exception:
+            print('No matching file found')
+    if len(cer_list) == 0 or len(wer_list) == 0:
+        print('Summary:\nNo values!')
+    else:
+        print('\nSummary:\nCER {0:.4f}%\nWER {1:.4f}%'.format((sum(cer_list) / len(cer_list)) * 100, (sum(wer_list) / len(wer_list)) * 100))
 
 
 if __name__ == '__main__':
