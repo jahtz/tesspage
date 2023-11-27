@@ -1,4 +1,5 @@
 from pathlib import Path
+
 from .hocr_parser import hocr_to_string
 from .pagexml_parser import pagexml_to_string
 

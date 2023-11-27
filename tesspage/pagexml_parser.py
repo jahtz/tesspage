@@ -1,4 +1,5 @@
 from pathlib import Path
+
 from bs4 import BeautifulSoup
 
 from tesspage.document import Document, Page, TextRegion, TextLine, page_to_string

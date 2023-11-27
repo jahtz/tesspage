@@ -1,5 +1,6 @@
-from lxml import etree
 from pathlib import Path
+
+from lxml import etree
 
 from tesspage.document import Document
 

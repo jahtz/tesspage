@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+
 from docopt import docopt
 
 from tesspage.pagexml_parser import parse_pagexml
@@ -22,14 +23,17 @@ Usage:
     tesspage.py tesseract --model_name <name> [--input <path>] [--output <path>] [--data_dir <folder>] [--config_dir <config_dir>] [--config <config>] [ARGS ...]
     tesspage.py eval [--eval_input <folder>]
 
-Options:
-    -h --help                       Show this screen.
-    -v --version                    Show version.
+Arguments:
     setup                           Download and setup tesspage, tesstrain and tesseract.
     generate                        Generate Ground-Truth from PageXML files.
     training                        Train Model.
     tesseract                       Run Tesseract.
     eval                            Evaluate quality of model. (Not implemented)
+    ARGS                            Additional arguments
+
+Options:
+    -h --help                       Show this screen.
+    -v --version                    Show version.
     --training_data <folder>        Input PageXML folder for training. [default: ./data/training_data/]
     --ground_truth <folder>         Ground Truth folder. [default: ./data/ground_truth/]
     --model_name <name>             Name of the model to be built. [default: foo]
@@ -44,10 +48,12 @@ Options:
     --eval_input <folder>           Folder containing evaluation files [default: ./data/eval/]
     --reference <file>              Supports .txt, .hocr .xml (pagexml) files [default: ./data/eval/reference.txt]
     --prediction <file>             Supports .txt, .hocr .xml (pagexml) files [default: ./data/eval/prediction.txt]
-    ARGS                            Additional arguments
     
-Guide:
+GitHub:
     https://github.com/Jatzelberger/tesspage
+    
+ZPD:
+    Developed at Zentrum für Philologie und Digitalität at the Julius-Maximilians-Universität of Würzburg.
 """
 
 

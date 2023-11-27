@@ -1,7 +1,8 @@
 import os
+from pathlib import Path
+
 import cv2
 import numpy
-from pathlib import Path
 
 from tesspage.document import Document
 

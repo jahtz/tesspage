@@ -1,8 +1,7 @@
 # TessPage
 Toolset for Tesseract training with PageXML Ground-Truth
 
-## Usage
-### Install & Setup:
+## Install & Setup
 1. Clone tesspage:
     ```
     $ git clone https://github.com/Jatzelberger/tesspage
@@ -44,8 +43,11 @@ tesspage
 ```
 ¹ [tesstrain](https://github.com/tesseract-ocr/tesstrain), ² [tessconfigs](https://github.com/tesseract-ocr/tessconfigs.git), ³ [tessdata_best](https://github.com/tesseract-ocr/tessdata_best) 
 
+## Usage
 ### Generate Ground-Truth
 Copy PageXML + Image Files to `./data/training_data` (or custom folder)
+
+Run script to generate single line image files and matching ground truth .txt files:
 ```
 python3 tesspage.py generate [--training_data <input_folder>] [--ground_truth <output_folder>]
 ```
@@ -53,6 +55,7 @@ python3 tesspage.py generate [--training_data <input_folder>] [--ground_truth <o
 - `--ground_truth`: output folder (line image and text files after exec) [default: ./data/ground_truth/]
 
 ### Train Model
+Run script to train custom Tesseract model from base model with single line image files and ground truth .txt files
 ```
 python3 tesspage.py training [--model_name <name>] [--start_model <model>] [--data_dir <folder>] [--ground_truth <folder>] [--tessdata <folder>] [--max_iterations <number>] [ARGS ...]
 ```
@@ -65,6 +68,7 @@ python3 tesspage.py training [--model_name <name>] [--start_model <model>] [--da
 - `ARGS`: Full argument list [here](https://github.com/tesseract-ocr/tesstrain#train)
 
 ### Run Tesseract
+Run Tesseract OCR with custom model
 ```
 python3 tesspage.py tesseract --model_name <name> [--input <path>] [--output <path>] [--data_dir <folder>] [--config_dir <config_dir>] [--config <config>] [ARGS ...]
 ```
@@ -77,6 +81,7 @@ python3 tesspage.py tesseract --model_name <name> [--input <path>] [--output <pa
 - `ARGS`: guide [here](https://tesseract-ocr.github.io/tessdoc/Command-Line-Usage.html)
 
 ### Evaluate Model
+Run to evaluate trained models (CER/WER)
 ```
 python3 tesspage.py eval [--eval_input <folder>]
 ```
@@ -92,4 +97,5 @@ python3 tesspage.py eval [--eval_input <folder>]
 ```
 python3 tesspage.py -h
 ```
-
+## ZPD
+Developed at [Zentrum für Philologie und Digitalität](https://www.uni-wuerzburg.de/en/zpd/startseite/) at the [Julius-Maximilians-Universität of Würzburg](https://www.uni-wuerzburg.de/en/home/)
