@@ -4,7 +4,7 @@ Toolset for Tesseract training with PageXML Ground-Truth
 ## Install & Setup
 1. Clone tesspage:
     ```
-    $ git clone https://github.com/Jatzelberger/tesspage
+    $ git clone https://github.com/jahtz/tesspage
     ```
 
 2. Install dependencies:

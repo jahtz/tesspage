@@ -50,7 +50,7 @@ Options:
     --prediction <file>             Supports .txt, .hocr .xml (pagexml) files [default: ./data/eval/prediction.txt]
     
 GitHub:
-    https://github.com/Jatzelberger/tesspage
+    https://github.com/jahtz/tesspage
     
 ZPD:
     Developed at Zentrum für Philologie und Digitalität at the Julius-Maximilians-Universität of Würzburg.
